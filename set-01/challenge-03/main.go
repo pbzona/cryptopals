@@ -41,36 +41,34 @@ func breakSingleByteXor(cipher string) {
 
 // Component functions
 func getFrequencyTable() map[string]int {
-	// returns a frequency table of ASCII chars based on:
-	// http://pi.math.cornell.edu/~mec/2003-2004/cryptography/subs/frequencies.html
 	fq := make(map[string]int)
 
-	fq["e"] = 21912
-	fq["t"] = 16587
-	fq["a"] = 14810
-	fq["o"] = 14003
-	fq["i"] = 13318
-	fq["n"] = 12666
-	fq["s"] = 11450
-	fq["r"] = 10977
-	fq["h"] = 10795
-	fq["d"] = 7874
-	fq["l"] = 7253
-	fq["u"] = 5246
-	fq["c"] = 4943
-	fq["m"] = 4761
-	fq["f"] = 4200
-	fq["y"] = 3853
-	fq["w"] = 3819
-	fq["g"] = 3693
-	fq["p"] = 3316
-	fq["b"] = 2715
-	fq["v"] = 2019
-	fq["k"] = 1257
-	fq["x"] = 315
-	fq["q"] = 205
-	fq["j"] = 188
-	fq["z"] = 128
+	fq["e"] = 26
+	fq["t"] = 25
+	fq["a"] = 24
+	fq["o"] = 23
+	fq["i"] = 22
+	fq["n"] = 21
+	fq["s"] = 20
+	fq["r"] = 19
+	fq["h"] = 18
+	fq["d"] = 17
+	fq["l"] = 16
+	fq["u"] = 15
+	fq["c"] = 14
+	fq["m"] = 13
+	fq["f"] = 12
+	fq["y"] = 11
+	fq["w"] = 10
+	fq["g"] = 9
+	fq["p"] = 8
+	fq["b"] = 7
+	fq["v"] = 6
+	fq["k"] = 5
+	fq["x"] = 4
+	fq["q"] = 3
+	fq["j"] = 2
+	fq["z"] = 1
 
 	return fq
 }
