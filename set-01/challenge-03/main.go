@@ -3,126 +3,63 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
-	"log"
-	"sort"
-	"strings"
 )
 
+const input = string("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
+
 func main() {
-	cipher := "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+	inp, _ := hex.DecodeString(input)
+	r := getReadableChars()
 
-	breakSingleByteXor(cipher)
-}
+	var highScore = float32(0)
+	var key string
+	var plaintext string
 
-// Master function
-func breakSingleByteXor(cipher string) {
-	cipherBytes := hexToBytes(cipher)
-	charKeys := getAlphabet()
+	for _, char := range r {
+		keyByte := char
+		ptext := xor(inp, keyByte)
 
-	// Decodes against each key (based on a basic alphabet of possible keys)
-	results := []string{}
-	for _, charKey := range charKeys {
-		keyByte := []byte(charKey)
-		plain := string(xor(cipherBytes, keyByte[0]))
-		results = append(results, strings.ToLower(plain))
+		var score = float32(0)
+		for _, letter := range ptext {
+			for _, b := range r {
+				if letter == b {
+					score++
+				}
+			}
+		}
+
+		if score > highScore {
+			highScore = score
+			key = string(char)
+			plaintext = string(ptext)
+		}
 	}
 
-	// Scores each result against the character frequency table
-	scores := []int{}
-	for _, result := range results {
-		score := scorePlaintext(result, getFrequencyTable())
-		scores = append(scores, score)
-	}
-
-	// Sort the scores and associated strings
-	scoreMap := createScoreMap(scores, results)
-	sortScores(scoreMap)
-}
-
-// Component functions
-func getFrequencyTable() map[string]int {
-	fq := make(map[string]int)
-
-	fq["e"] = 26
-	fq["t"] = 25
-	fq["a"] = 24
-	fq["o"] = 23
-	fq["i"] = 22
-	fq["n"] = 21
-	fq["s"] = 20
-	fq["r"] = 19
-	fq["h"] = 18
-	fq["d"] = 17
-	fq["l"] = 16
-	fq["u"] = 15
-	fq["c"] = 14
-	fq["m"] = 13
-	fq["f"] = 12
-	fq["y"] = 11
-	fq["w"] = 10
-	fq["g"] = 9
-	fq["p"] = 8
-	fq["b"] = 7
-	fq["v"] = 6
-	fq["k"] = 5
-	fq["x"] = 4
-	fq["q"] = 3
-	fq["j"] = 2
-	fq["z"] = 1
-
-	return fq
-}
-
-func getAlphabet() []string {
-	return []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
-}
-
-func hexToBytes(input string) []byte {
-	b, err := hex.DecodeString(input)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return b
+	fmt.Println("Score:", highScore, "\nKey:", key, "\nPlaintext:", plaintext)
 }
 
 func xor(a []byte, b byte) []byte {
-	var c []byte
+	c := make([]byte, len(a))
 	for i := range a {
-		c = append(c, a[i]^b)
+		c[i] = a[i] ^ b
 	}
 	return c
 }
 
-func scorePlaintext(p string, fq map[string]int) int {
-	score := 0
-	chars := strings.Split(p, "")
+func getReadableChars() []byte {
+	// From: http://www.asciitable.com/
+	r := []byte{}
 
-	for _, char := range chars {
-		if value, hasKey := fq[char]; hasKey {
-			score += value
-		}
+	// Space
+	r = append(r, byte(20))
+	// A-Z
+	for i := 65; i <= 90; i++ {
+		r = append(r, byte(i))
+	}
+	// a-z
+	for i := 97; i <= 122; i++ {
+		r = append(r, byte(i))
 	}
 
-	return score
-}
-
-func createScoreMap(scores []int, strings []string) map[int]string {
-	scoreMap := make(map[int]string)
-	for i, score := range scores {
-		scoreMap[score] = strings[i]
-	}
-	return scoreMap
-}
-
-func sortScores(scoreMap map[int]string) {
-	scores := []int{}
-	for i := range scoreMap {
-		scores = append(scores, i)
-	}
-
-	// Prints scores in *ascending* order
-	sort.Ints(scores)
-	for _, score := range scores {
-		fmt.Println("Score:", score, "Text:", scoreMap[score])
-	}
+	return r
 }
